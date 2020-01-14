@@ -345,7 +345,7 @@ class SX127x:
         self.aquire_lock(True)              # lock until TX_Done
         irqFlags = self.getIrqFlags()
 
-        if (irqFlags == IRQ_RX_DONE_MASK):  # RX_DONE only, irqFlags should be 0x40
+        if (irqFlags & IRQ_RX_DONE_MASK):  # RX_DONE only, irqFlags should be 0x40
             # automatically standby when RX_DONE
             if self._onReceive:
                 payload = self.read_payload()
