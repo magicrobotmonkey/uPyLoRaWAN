@@ -49,6 +49,7 @@ class Controller:
                         pin_id_CadDetected = PIN_ID_FOR_LORA_DIO4,
                         pin_id_PayloadCrcError = PIN_ID_FOR_LORA_DIO5):
         transceiver.blink_led = self.blink_led
+        transceiver.led_on = self.led_on
         transceiver.pin_ss = self.prepare_pin(pin_id_ss)
         transceiver.pin_RxDone = self.prepare_irq_pin(pin_id_RxDone)
         transceiver.pin_RxTimeout = self.prepare_irq_pin(pin_id_RxTimeout)
