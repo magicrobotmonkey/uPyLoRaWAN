@@ -320,6 +320,13 @@ class SX127x:
         # no need to reset FIFO_ADDR_PTR
         self.writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_CONTINUOUS)
 
+    def receive_single(self, size = 0):
+        self.implicitHeaderMode(size > 0)
+        if size > 0: self.writeRegister(REG_PAYLOAD_LENGTH, size & 0xff)
+        # The last packet always starts at FIFO_RX_CURRENT_ADDR
+        # no need to reset FIFO_ADDR_PTR
+        self.writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_SINGLE)
+
 
     def handleOnTimeout(self, event_source):
         self.aquire_lock(True)
