@@ -75,6 +75,7 @@ class SX127x:
         self.name = name
         self.parameters = parameters
         self._onReceive = onReceive
+        self._onTimeout = None
         self._lock = False
 
 
@@ -300,6 +301,16 @@ class SX127x:
             else:
                 self.pin_RxDone.detach_irq()
 
+    def onTimeout(self, callback):
+        self._onTimeout = callback
+
+        if self.pin_RxTimeout:
+            if callback:
+                self.writeRegister(REG_DIO_MAPPING_1, 0x01)
+                self.pin_RxTimeout.set_handler_for_irq_on_rising_edge(handler = self.handleOnTimeout)
+            else:
+                self.pin_RxTimeout.detach_irq()
+
 
     def receive(self, size = 0):
         self.implicitHeaderMode(size > 0)
@@ -308,6 +319,19 @@ class SX127x:
         # The last packet always starts at FIFO_RX_CURRENT_ADDR
         # no need to reset FIFO_ADDR_PTR
         self.writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_CONTINUOUS)
+
+
+    def handleOnTimeout(self, event_source):
+        self.aquire_lock(True)
+        irqFlags = self.getIrqFlags()
+
+        if (irqFlags & IRQ_RX_TIME_OUT_MASK):
+            if self._onTimeout:
+                payload = self.read_payload()
+                self._onTimeout(self, payload)
+
+        self.aquire_lock(False)
+        return True
 
 
     def handleOnReceive(self, event_source):
