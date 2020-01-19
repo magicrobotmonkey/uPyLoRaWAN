@@ -17,7 +17,8 @@ class Wanderer:
         msg = "OK!! {}    RSSI {}".format(str(payload), self.lora.packetRssi())
         print(msg)
         self.display.show_text_wrap(msg)
-        time.sleep(1)
+        time.sleep(5)
+        lora.led_on()
         self.phone()
         
 
@@ -26,6 +27,7 @@ class Wanderer:
         print(msg)
         self.display.show_text_wrap(msg)
         time.sleep(1)
+        lora.led_on(False)
         self.phone()
 
     def phone(self):
