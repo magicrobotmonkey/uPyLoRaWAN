@@ -1,16 +1,24 @@
 from time import sleep
 from uPySensors.ssd1306_i2c import Display
 
+display = Display()
+def handle(lora, payload):
+    print(payload)
+    display.show_text_wrap(payload)
+        
 def send(lora):
     counter = 0
     print("LoRa Sender")
-    display = Display()
+
+    lora.onReceive(handle)
 
     while True:
-        payload = 'Hello ({0})'.format(counter)
-        #print("Sending packet: \n{}\n".format(payload))
+        lora.sleep()
+        payload = '{0}'.format(counter)
+        print("Sending packet: {}".format(payload))
         display.show_text_wrap("{0} RSSI: {1}".format(payload, lora.packetRssi()))
         lora.println(payload)
+        lora.receive()
 
         counter += 1
-        sleep(5)
+        sleep(2)
